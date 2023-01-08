@@ -1,5 +1,7 @@
 ﻿# Simple Web server and web app
  
+ Use bcrypt for the password hashing and matching so run this in the terminal: go get golang.org/x/crypto/bcrypt
+ 
 * run the golang-simple-webserverapp.exe
 ![image](https://user-images.githubusercontent.com/9039354/211132483-0d60fa77-e52c-42f5-abda-d18187e71d23.png)
 *this will run a localhost on port 8080
