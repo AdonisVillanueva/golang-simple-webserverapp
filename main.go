@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func formHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +22,28 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+
 	fmt.Fprintf(w, "Account Type = %s\n", account)
 	fmt.Fprintf(w, "Name = %s\n", name)
 	fmt.Fprintf(w, "Gender = %s\n", gender)
 	fmt.Fprintf(w, "Email = %s\n", email)
-	fmt.Fprintf(w, "Password = %s\n", password)
+
+	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
+	fmt.Println("Password:", password)
+	fmt.Println("Hash:    ", hash)
+
+	match := CheckPasswordHash(password, hash)
+	fmt.Println("Passoword Match hash:   ", match)
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
