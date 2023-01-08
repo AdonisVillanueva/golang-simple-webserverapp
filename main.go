@@ -9,6 +9,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type RegistrationDetails struct {
+	Name         string
+	Account      string
+	Email        string
+	Gender       string
+	PasswordHash string
+}
+
 func formHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Println(err)
@@ -17,23 +25,23 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "Form: %+v\n", r.Form)
 
-	account := r.FormValue("account")
-	gender := r.FormValue("gender")
-	name := r.FormValue("name")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	hash, err := HashPassword(r.FormValue("password"))
+	if err != nil {
+		fmt.Fprintf(w, "Error when hashing password - Error: %s\n", err)
+		return
+	}
 
-	fmt.Fprintf(w, "Account Type = %s\n", account)
-	fmt.Fprintf(w, "Name = %s\n", name)
-	fmt.Fprintf(w, "Gender = %s\n", gender)
-	fmt.Fprintf(w, "Email = %s\n", email)
+	registration := RegistrationDetails{
+		Account:      r.FormValue("account"),
+		Gender:       r.FormValue("gender"),
+		Name:         r.FormValue("name"),
+		Email:        r.FormValue("email"),
+		PasswordHash: hash,
+	}
+	fmt.Fprintf(w, "Registration details: %+v\n", registration)
 
-	hash, _ := HashPassword(password)
-	fmt.Println(w, "Password:", password)
-	fmt.Println(w, "Hash:    ", hash)
-
-	match := CheckPasswordHash(password, hash)
-	fmt.Println(w, "Password Match hash:   ", match)
+	match := CheckPasswordHash(r.FormValue("password"), hash)
+	fmt.Fprintf(w, "Password Match hash: %t\n", match)
 }
 
 func HashPassword(password string) (string, error) {
