@@ -28,12 +28,12 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Gender = %s\n", gender)
 	fmt.Fprintf(w, "Email = %s\n", email)
 
-	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
-	fmt.Println("Password:", password)
-	fmt.Println("Hash:    ", hash)
+	hash, _ := HashPassword(password)
+	fmt.Println(w, "Password:", password)
+	fmt.Println(w, "Hash:    ", hash)
 
 	match := CheckPasswordHash(password, hash)
-	fmt.Println("Passoword Match hash:   ", match)
+	fmt.Println(w, "Password Match hash:   ", match)
 }
 
 func HashPassword(password string) (string, error) {
